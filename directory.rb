@@ -1,3 +1,16 @@
+students = [
+  {name: "Dr. Hannibal Lecter", cohort: :november},
+  {name: "Darth Vader", cohort: :november},
+  {name: "Nurse Ratched", cohort: :november},
+  {name: "Michael Corleone", cohort: :november},
+  {name: "Alex DeLarge", cohort: :november},
+  {name: "The Wicked Witch of the West", cohort: :november},
+  {name: "Terminator", cohort: :november},
+  {name: "Freddy Krueger", cohort: :november},
+  {name: "The Joker", cohort: :november},
+  {name: "Joffrey Baratheon", cohort: :november},  
+  {name: "Norman Bates", cohort: :november}
+]
 def input_students
 	puts "Please enter the names of the students"
 	puts "To finish, just hit return twice"
@@ -22,8 +35,9 @@ def print_header
 	puts "-------------"
 end
 
-def print names
-	names.each{|student| puts "#{student[:name]} (#{student[:cohort]} cohort)"}
+def print names, letters="a".."z"
+
+	names.each_with_index{|student,i| puts "#{i+1}. #{student[:name]} (#{student[:cohort]} cohort)" if letters.include? student[:name][0].downcase}
 end
 
 def print_footer names
@@ -31,7 +45,7 @@ def print_footer names
 end
 
 
-students = input_students
+#students = input_students
 print_header
-print students
+print students, "a"
 print_footer students
