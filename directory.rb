@@ -35,9 +35,9 @@ def print_header
 	puts "-------------"
 end
 
-def print names, letters="a".."z"
+def print names, letters="a".."z", character_max=100
 
-	names.each_with_index{|student,i| puts "#{i+1}. #{student[:name]} (#{student[:cohort]} cohort)" if letters.include? student[:name][0].downcase}
+	names.each_with_index{|student,i| puts "#{i+1}. #{student[:name]} (#{student[:cohort]} cohort)" if ((letters.include? student[:name][0].downcase) && (student[:name].length < character_max))}
 end
 
 def print_footer names
@@ -47,5 +47,5 @@ end
 
 #students = input_students
 print_header
-print students, "a"
+print students#, "d", 12
 print_footer students
