@@ -12,11 +12,32 @@ students = [
   {name: "Joffrey Baratheon", cohort: :november, hobby: "Villainy", height: "Unknown"},  
   {name: "Norman Bates", cohort: :november, hobby: "Villainy", height: "Unknown"}
 ]
-def input_students added_students=[]
+def interactive_menu
+	students = []
+	loop do
+		puts "1. Input the students"
+		puts "2. Show the students"
+		puts "9. Exit"
+		selection = gets.chomp
+		case selection
+		when "1"
+			students = input_student students
+		when "2"
+			print_header
+			print(students)#"d", 12)
+			print_footer(students)
+		when "9"
+			break
+		else
+			puts "I don't know what you meant - please try again"
+		end
+	end
+end
+
+def input_student added_students=[]
 	students = added_students
 	cohort,hobby,height = :november, "unknown", "unknown"
 	puts "Please enter the student's NAME/COHORT/HOBBY/HEIGHT"
-	puts "To finish, just hit return twice"
 	input = gets.chomp.split('/')
 	return students if input.empty?
 	name = input[0]
@@ -35,16 +56,16 @@ def input_students added_students=[]
 	plural = ""
 	plural = "s" if (students.count > 1)
 	puts "Now we have #{students.count} student#{plural}"
-	input_students (students)
+	return students
 end
 
-def print_header cohort
+def print_header cohort=:november
 	puts "The students of Villains Academy's #{cohort.capitalize} cohort".center(85)
 	puts "-------------".center(85)
 end
 
-def print names, cohort, letters="a".."z", character_max=100
-	names.select!{|x| x[:cohort] == cohort.to_sym}
+def print names, cohort=:november, letters="a".."z", character_max=100
+	names.select!{|x| x[:cohort].downcase == cohort.to_sym.downcase}
 	(return puts "No students are on this cohort".center(85)) if names.empty?
 	i = 0
 	while i < names.length
@@ -65,10 +86,11 @@ def choose_cohort
 	gets.chomp
 end
 
-students = input_students
-cohort = "november"
-cohort = choose_cohort
-print_header(cohort)
-print(students, cohort,)#"d", 12)
-print_footer(students, cohort)
+# students = input_students
+# cohort = "november"
+# cohort = choose_cohort
+# print_header(cohort)
+# print(students, cohort,)#"d", 12)
+# print_footer(students, cohort)
+interactive_menu
 
