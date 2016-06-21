@@ -1,8 +1,9 @@
+require 'date'
 students = [
-  {name: "Dr. Hannibal Lecter", cohort: :november, hobby: "Villainy", height: "Unknown"},
-  {name: "Darth Vader", cohort: :november, hobby: "Villainy", height: "Unknown"},
-  {name: "Nurse Ratched", cohort: :november, hobby: "Villainy", height: "Unknown"},
-  {name: "Michael Corleone", cohort: :november, hobby: "Villainy", height: "Unknown"},
+  {name: "Dr. Hannibal Lecter", cohort: :january, hobby: "Villainy", height: "Unknown"},
+  {name: "Darth Vader", cohort: :january, hobby: "Villainy", height: "Unknown"},
+  {name: "Nurse Ratched", cohort: :january, hobby: "Villainy", height: "Unknown"},
+  {name: "Michael Corleone", cohort: :january, hobby: "Villainy", height: "Unknown"},
   {name: "Alex DeLarge", cohort: :november, hobby: "Villainy", height: "Unknown"},
   {name: "The Wicked Witch of the West", cohort: :november, hobby: "Villainy", height: "Unknown"},
   {name: "Terminator", cohort: :november, hobby: "Villainy", height: "Unknown"},
@@ -11,48 +12,62 @@ students = [
   {name: "Joffrey Baratheon", cohort: :november, hobby: "Villainy", height: "Unknown"},  
   {name: "Norman Bates", cohort: :november, hobby: "Villainy", height: "Unknown"}
 ]
-def input_students
-	puts "Please enter the names of the students"
+def input_students added_students=[]
+	students = added_students
+	cohort,hobby,height = :november, "unknown", "unknown"
+	puts "Please enter the student's NAME/COHORT/HOBBY/HEIGHT"
 	puts "To finish, just hit return twice"
-	# create an empty array
-	students = []
-	# get the first name
-	name = gets.chomp
-	puts "Please enter the student's height"
-	height = gets.chomp
-	puts "Please enter the student's favourite hobby"
-	hobby = gets.chomp
-	# while the name is not empty, repeat this code
-	while !name.empty? do 
-		# add the student hash to the array
-		students << {name: name, cohort: :november, height: height, hobby: hobby}
-		puts "Now we have #{students.count} students"
-		# get another name from the user
-		name = gets.chomp
+	input = gets.chomp.split('/')
+	return students if input.empty?
+	name = input[0]
+	cohort = input[1] unless input[1] == nil
+	hobby = input[2] unless input[2] == nil
+	height = input[3] unless input[3] == nil
+	if !Date::MONTHNAMES[1..-1].include? cohort.capitalize
+		puts "Please re-enter the student's cohort"
+		cohort = gets.chomp
+		if !Date::MONTHNAMES[1..-1].include? cohort.capitalize
+			cohort = :november
+			puts "Invalid input - default of 'November' assigned"
+		end
 	end
-	# return the array of students
-	students
+	students << {name: name, cohort: cohort.to_sym, height: height, hobby: hobby}
+	plural = ""
+	plural = "s" if (students.count > 1)
+	puts "Now we have #{students.count} student#{plural}"
+	input_students (students)
 end
 
-def print_header
-	puts "The students of Villains Academy".center(85)
+def print_header cohort
+	puts "The students of Villains Academy's #{cohort.capitalize} cohort".center(85)
 	puts "-------------".center(85)
 end
 
-def print names, letters="a".."z", character_max=100
+def print names, cohort, letters="a".."z", character_max=100
+	names.select!{|x| x[:cohort] == cohort.to_sym}
 	i = 0
 	while i < names.length
-		puts "#{i+1}. #{names[i][:name]} (#{names[i][:cohort]} cohort, Hobby: #{names[i][:hobby]}, Height: #{names[i][:height]})".center(85) if ((letters.include? names[i][:name][0].downcase) && (names[i][:name].length < character_max))
+		puts "#{i+1}. #{names[i][:name]} (Cohort: #{names[i][:cohort].capitalize}, Hobby: #{names[i][:hobby]}, Height: #{names[i][:height]})".center(85) if ((letters.include? names[i][:name][0].downcase) && (names[i][:name].length < character_max))
+
 		i += 1
 	end
 end
 
-def print_footer names
-	puts "Overall, we have #{names.count} great students".center(85)
+def print_footer names, cohort
+	plural = ""
+	plural = "s" if (names.count > 1)
+	puts "Overall, we have #{names.count} great student#{plural} in the #{cohort.capitalize} cohort".center(85)
 end
 
+def choose_cohort
+	puts "Which month's cohort would you like to see?"
+	gets.chomp
+end
 
-#students = input_students
-print_header
-print students#, "d", 12
-print_footer students
+students = input_students
+cohort = "november"
+cohort = choose_cohort
+print_header(cohort)
+print(students, cohort,)#"d", 12)
+print_footer(students, cohort)
+
