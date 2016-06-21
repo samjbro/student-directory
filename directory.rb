@@ -45,6 +45,7 @@ end
 
 def print names, cohort, letters="a".."z", character_max=100
 	names.select!{|x| x[:cohort] == cohort.to_sym}
+	(return puts "No students are on this cohort".center(85)) if names.empty?
 	i = 0
 	while i < names.length
 		puts "#{i+1}. #{names[i][:name]} (Cohort: #{names[i][:cohort].capitalize}, Hobby: #{names[i][:hobby]}, Height: #{names[i][:height]})".center(85) if ((letters.include? names[i][:name][0].downcase) && (names[i][:name].length < character_max))
@@ -53,7 +54,7 @@ def print names, cohort, letters="a".."z", character_max=100
 	end
 end
 
-def print_footer names, cohort
+def print_footer names=[], cohort=:november
 	plural = ""
 	plural = "s" if (names.count > 1)
 	puts "Overall, we have #{names.count} great student#{plural} in the #{cohort.capitalize} cohort".center(85)
