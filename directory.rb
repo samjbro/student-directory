@@ -12,34 +12,45 @@ students = [
   {name: "Joffrey Baratheon", cohort: :november, hobby: "Villainy", height: "Unknown"},  
   {name: "Norman Bates", cohort: :november, hobby: "Villainy", height: "Unknown"}
 ]
+@students = []
 def interactive_menu
-	students = []
 	loop do
-		puts "1. Input the students"
-		puts "2. Show the students"
-		puts "9. Exit"
-		selection = gets.chomp
-		case selection
-		when "1"
-			students = input_student students
-		when "2"
-			print_header
-			print(students)#"d", 12)
-			print_footer(students)
-		when "9"
-			break
-		else
-			puts "I don't know what you meant - please try again"
-		end
+		print_menu
+		process(gets.chomp)
 	end
 end
 
-def input_student added_students=[]
-	students = added_students
+def print_menu
+	puts "1. Input the students"
+	puts "2. Show the students"
+	puts "9. Exit"
+end
+
+def process selection
+	case selection
+	when "1"
+		input_student
+	when "2"
+		show_students
+	when "9"
+		exit
+	else
+		puts "I don't know what you mean - please try again"
+	end
+end
+
+
+def show_students
+	print_header
+	print_students_list
+	print_footer
+end
+
+def input_student
 	cohort,hobby,height = :november, "unknown", "unknown"
 	puts "Please enter the student's NAME/COHORT/HOBBY/HEIGHT"
 	input = gets.chomp.split('/')
-	return students if input.empty?
+	return @students if input.empty?
 	name = input[0]
 	cohort = input[1] unless input[1] == nil
 	hobby = input[2] unless input[2] == nil
@@ -52,11 +63,10 @@ def input_student added_students=[]
 			puts "Invalid input - default of 'November' assigned"
 		end
 	end
-	students << {name: name, cohort: cohort.to_sym, height: height, hobby: hobby}
+	@students << {name: name, cohort: cohort.to_sym, height: height, hobby: hobby}
 	plural = ""
-	plural = "s" if (students.count > 1)
-	puts "Now we have #{students.count} student#{plural}"
-	return students
+	plural = "s" if (@students.count > 1)
+	puts "Now we have #{@students.count} student#{plural}"
 end
 
 def print_header cohort=:november
@@ -64,8 +74,8 @@ def print_header cohort=:november
 	puts "-------------".center(85)
 end
 
-def print names, cohort=:november, letters="a".."z", character_max=100
-	names.select!{|x| x[:cohort].downcase == cohort.to_sym.downcase}
+def print_students_list cohort=:november, letters="a".."z", character_max=100
+	names = @students.select{|x| x[:cohort].downcase == cohort.to_sym.downcase}
 	(return puts "No students are on this cohort".center(85)) if names.empty?
 	i = 0
 	while i < names.length
@@ -75,10 +85,10 @@ def print names, cohort=:november, letters="a".."z", character_max=100
 	end
 end
 
-def print_footer names=[], cohort=:november
+def print_footer cohort=:november
 	plural = ""
-	plural = "s" if (names.count > 1)
-	puts "Overall, we have #{names.count} great student#{plural} in the #{cohort.capitalize} cohort".center(85)
+	plural = "s" if (@students.count > 1)
+	puts "Overall, we have #{@students.count} great student#{plural} in the #{cohort.capitalize} cohort".center(85)
 end
 
 def choose_cohort
@@ -86,11 +96,11 @@ def choose_cohort
 	gets.chomp
 end
 
-# students = input_students
+# @students = input_@students
 # cohort = "november"
 # cohort = choose_cohort
 # print_header(cohort)
-# print(students, cohort,)#"d", 12)
-# print_footer(students, cohort)
+# print(@students, cohort,)#"d", 12)
+# print_footer(@students, cohort)
 interactive_menu
 
