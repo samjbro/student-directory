@@ -1,7 +1,9 @@
 require 'date'
+require 'csv'
 @students = []
 
 def interactive_menu
+	init_load_students
 	loop do
 		print_menu
 		process(STDIN.gets.chomp)
@@ -21,14 +23,13 @@ def process selection
 	when "1"; input_student
 	when "2"; show_students
 	when "3"; save_students
-	when "4"; try_load_students
-	when "9"; exit
+	when "4"; choose_load_students
+	when "9"; abort("You have exited the directory")
 	else; puts "I don't know what you mean - please try again"
 	end
 end
 
 def input_student
-	#cohort,hobby,height = :november, "unknown", "unknown"
 	puts "Please enter the student's NAME,COHORT,HOBBY,HEIGHT"
 	add_student(STDIN.gets)
 	plural = ""
@@ -40,7 +41,13 @@ def add_student data_arr
 	return if data_arr.empty?
 	name, cohort, height, hobby = data_arr.chomp.split(',')
 	cohort = check_valid_month(cohort, name)
-	@students << {name: name, cohort: cohort.to_sym, height: height, hobby: hobby}
+	student = {name: name, cohort: cohort.to_sym, height: height, hobby: hobby} 
+	if !@students.include?(student)
+		@students << student
+		puts "#{name} was added to the directory!"
+	else
+		puts "#{name} is already in the directory."
+	end 
 end
 
 def check_valid_month cohort, name
@@ -59,30 +66,40 @@ def show_students
 end
 
 def save_students
-	file = File.open("students.csv", "w")
-	@students.each do |student|
-		student_data = [student[:name], student[:cohort], student[:hobby], student[:height]]
-		csv_line = student_data.join(',')
-		file.puts csv_line
+	puts "Which file would you like to save to?"
+	CSV.open(STDIN.gets.chomp, "wb") do |csv|
+		@students.each {|student| csv << [student[:name], student[:cohort], student[:hobby], student[:height]]}
 	end
-	file.close
+	puts "The directory was saved."
 end
 
-def try_load_students
-	filename = ARGV.first
-	filename = "students.csv" if filename.nil?
-	if File.exists?(filename)
+def init_load_students
+	if ARGV.empty?
+		puts "No save file supplied - Load default file? Y/N"
+		input = STDIN.gets.chomp
+		case input.upcase
+		when 'Y'
+			puts "Loading default save file: 'students.csv'"
+			return load_students
+		else
+			puts "Opening blank directory:"
+		end
+	else 
+		filename = ARGV.first
 		load_students(filename)
-		puts "Loaded #{@students.count} from #{filename}"
-	else
-		abort "Sorry, #{filename} doesn't exist."
 	end
 end
 
-def load_students(filename = "students.csv")
-	file = File.open(filename, "r")
-	file.readlines.each {|line| add_student(line)}
-	file.close
+def choose_load_students
+	puts "Which file would you like to load?"
+	saved_file = STDIN.gets.chomp
+	return load_students(saved_file) if File.exists?(saved_file)
+	puts "Sorry, '#{saved_file}' doesn't exist."
+end
+
+def load_students(filename="students.csv")
+	puts "Loading students from #{filename}:"
+	CSV.foreach(filename) {|line| add_student(line.join(','))}
 end
 
 def print_header cohort="2016"
