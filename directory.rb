@@ -18,18 +18,12 @@ end
 
 def process selection
 	case selection
-	when "1"
-		input_student
-	when "2"
-		show_students
-	when "3"
-		save_students
-	when "4"
-		try_load_students
-	when "9"
-		exit
-	else
-		puts "I don't know what you mean - please try again"
+	when "1"; input_student
+	when "2"; show_students
+	when "3"; save_students
+	when "4"; try_load_students
+	when "9"; exit
+	else; puts "I don't know what you mean - please try again"
 	end
 end
 
@@ -97,16 +91,10 @@ def print_header cohort="2016"
 end
 
 def print_students_list cohort="2016", letters="a".."z", character_max=100
-	if cohort == "2016"
-		names = @students
-	else
-		names = @students.select{|x| x[:cohort].downcase == cohort.to_sym.downcase}
-	end
-	(return puts "No students are in this cohort".center(85)) if names.empty?
-	i = 0
-	while i < names.length
+	cohort == "2016" ? (names = @students) : (names = @students.select{|x| x[:cohort].downcase == cohort.to_sym.downcase})
+	return puts "No students are in this cohort".center(85) if names.empty?
+	names.each_with_index do |name,i|
 		puts "#{i+1}. #{names[i][:name]} (Cohort: #{names[i][:cohort].capitalize}, Hobby: #{names[i][:hobby]}, Height: #{names[i][:height]})".center(85) if ((letters.include? names[i][:name][0].downcase) && (names[i][:name].length < character_max))
-		i += 1
 	end
 end
 
