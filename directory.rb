@@ -35,27 +35,26 @@ end
 
 def input_student
 	#cohort,hobby,height = :november, "unknown", "unknown"
-	puts "Please enter the student's NAME/COHORT/HOBBY/HEIGHT"
-	input = STDIN.gets.chomp.split('/')
-	return @students if input.empty?
-	name = input[0]
-	input[1] = :none if input[1] == nil
-	cohort = check_valid_month input[1]
-	hobby = input[2] unless input[2] == nil
-	height = input[3] unless input[3] == nil
-	
-	@students << {name: name, cohort: cohort.to_sym, height: height, hobby: hobby}
+	puts "Please enter the student's NAME,COHORT,HOBBY,HEIGHT"
+	add_student(STDIN.gets)
 	plural = ""
 	plural = "s" if (@students.count > 1)
 	puts "Now we have #{@students.count} student#{plural}"
 end
 
-def check_valid_month cohort
-	return cohort unless !Date::MONTHNAMES[1..-1].include? cohort.capitalize
-	puts "Please re-enter the student's cohort"
+def add_student data_arr
+	return if data_arr.empty?
+	name, cohort, height, hobby = data_arr.chomp.split(',')
+	cohort = check_valid_month(cohort, name)
+	@students << {name: name, cohort: cohort.to_sym, height: height, hobby: hobby}
+end
+
+def check_valid_month cohort, name
+	return cohort unless !Date::MONTHNAMES[1..-1].include? cohort.to_s.capitalize
+	puts "Please re-enter #{name}'s cohort"
 	cohort = STDIN.gets.chomp
 	cohort = :none if cohort == nil
-	check_valid_month cohort
+	check_valid_month cohort, name
 end
 
 def show_students
@@ -77,7 +76,7 @@ end
 
 def try_load_students
 	filename = ARGV.first
-	return if filename.nil?
+	filename = "students.csv" if filename.nil?
 	if File.exists?(filename)
 		load_students(filename)
 		puts "Loaded #{@students.count} from #{filename}"
@@ -88,10 +87,7 @@ end
 
 def load_students(filename = "students.csv")
 	file = File.open(filename, "r")
-	file.readlines.each do |line|
-		name, cohort, hobby, height = line.chomp.split(',')
-		@students << {name: name, cohort: cohort.to_sym, hobby: hobby, height: height}
-	end
+	file.readlines.each {|line| add_student(line)}
 	file.close
 end
 
